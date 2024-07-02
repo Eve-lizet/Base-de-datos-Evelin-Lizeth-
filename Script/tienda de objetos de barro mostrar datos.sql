@@ -1,11 +1,11 @@
-
 CREATE DATABASE IF NOT EXISTS OBJETOS_DE_BARRO;
 USE OBJETOS_DE_BARRO;
-SHOW TABLES;
+
 CREATE TABLE CATEGORIA (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL
 );
+
 CREATE TABLE PRODUCTOS (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -16,18 +16,18 @@ CREATE TABLE PRODUCTOS (
     FOREIGN KEY (id_categoria) REFERENCES CATEGORIA(id_categoria)
 );
 
-
 CREATE TABLE CLIENTES (
     id_clientes INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     correo VARCHAR(50) NOT NULL UNIQUE,
     telefono VARCHAR(15) NOT NULL UNIQUE
 );
+
 CREATE TABLE PROVEEDORES (
     id_proveedores INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     contacto VARCHAR(15),
-     correo VARCHAR(50) NOT NULL UNIQUE
+    correo VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE VENTA (
@@ -37,26 +37,26 @@ CREATE TABLE VENTA (
     total DECIMAL(10, 2),
     FOREIGN KEY (id_cliente) REFERENCES CLIENTES(id_clientes)
 );
+
 CREATE TABLE FACTURA (
     id_factura INT AUTO_INCREMENT PRIMARY KEY,
     id_venta INT,
     id_producto INT,
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10, 2) NOT NULL,
-     nombre VARCHAR(50) NOT NULL,
     FOREIGN KEY (id_venta) REFERENCES VENTA(id_venta),
     FOREIGN KEY (id_producto) REFERENCES PRODUCTOS(id_producto)
 );
---
+
 -- Insertar categorías
 INSERT INTO CATEGORIA (nombre) VALUES 
- ('Figuras Decorativas'),
- ('Platos y cuencos'),
- ('Tazas y jarras'),
- ('Macetas'),
- ('Figuras decorativas'),
- ('Azulejos y baldosas'),
- ('Cazuelas y ollas'),
+('Figuras Decorativas'),
+('Platos y cuencos'),
+('Tazas y jarras'),
+('Macetas'),
+('Figuras decorativas'),
+('Azulejos y baldosas'),
+('Cazuelas y ollas'),
 ('Lámparas y candelabros'),
 ('Juguetes'),
 ('Instrumentos musicales');
@@ -100,7 +100,6 @@ INSERT INTO CLIENTES (correo, telefono, nombre) VALUES
 ('cliente9@example.com', '5559012345', 'Javier González'),
 ('cliente10@example.com', '5556789012', 'Carmen Ruiz');
 
-
 -- Insertar ventas
 INSERT INTO VENTA (fecha, id_cliente, total) VALUES
 ('2024-05-31', 1, 50.00),
@@ -115,26 +114,113 @@ INSERT INTO VENTA (fecha, id_cliente, total) VALUES
 ('2024-05-22', 10, 70.00);
 
 -- Insertar facturas
-INSERT INTO FACTURA (id_venta, id_producto, cantidad, precio_unitario, nombre) VALUES 
-(1, 1, 2, 25.50, 'Vasija Decorativa'),
-(2, 2, 3, 12.00, 'Plato Rústico'),
-(3, 3, 1, 8.00, 'Taza de Café'),
-(4, 4, 4, 10.00, 'Maceta Pequeña'),
-(5, 5, 1, 20.00, 'Figura de Búho'),
-(6, 6, 5, 5.00, 'Azulejo Decorativo'),
-(7, 7, 2, 35.00, 'Cazuela Grande'),
-(8, 8, 3, 15.00, 'Candelabro de Barro'),
-(9, 9, 2, 10.00, 'Muñeco Tradicional'),
-(10, 10, 1, 18.00, 'Ocarina de Barro');
+INSERT INTO FACTURA (id_venta, id_producto, cantidad, precio_unitario) VALUES 
+(1, 1, 2, 25.50),
+(2, 2, 3, 12.00),
+(3, 3, 1, 8.00),
+(4, 4, 4, 10.00),
+(5, 5, 1, 20.00),
+(6, 6, 5, 5.00),
+(7, 7, 2, 35.00),
+(8, 8, 3, 15.00),
+(9, 9, 2, 10.00),
+(10, 10, 1, 18.00);
+
 
 -- Mostrar datos de la tabla PRODUCTOS
 SELECT * FROM PRODUCTOS;
-
 -- Mostrar datos de la tabla CLIENTES
 SELECT * FROM CLIENTES;
-
 -- Mostrar datos de la tabla VENTA
 SELECT * FROM VENTA;
-
 -- Mostrar datos de la tabla FACTURA
 SELECT * FROM FACTURA;
+
+SELECT nombre, precio FROM PRODUCTOS;
+SELECT nombre, correo FROM CLIENTES;
+SELECT fecha, total FROM VENTA;
+SELECT cantidad, nombre FROM FACTURA;
+
+SELECT * FROM PRODUCTOS ORDER BY precio ASC;
+SELECT * FROM CLIENTES ORDER BY nombre DESC;
+SELECT * FROM VENTA ORDER BY fecha ASC;
+SELECT * FROM FACTURA ORDER BY cantidad DESC;
+
+
+SELECT COUNT(*) FROM PRODUCTOS;
+SELECT COUNT(*) FROM CLIENTES;
+SELECT COUNT(*) FROM VENTA;
+SELECT COUNT(*) FROM FACTURA;
+
+SELECT SUM(precio) FROM PRODUCTOS;
+SELECT SUM(stock) FROM PRODUCTOS;
+SELECT SUM(total) FROM VENTA;
+SELECT SUM(cantidad) FROM FACTURA;
+
+SELECT MAX(precio) AS precio_maximo, MIN(precio) AS precio_minimo FROM PRODUCTOS;
+SELECT MAX(stock) AS stock_maximo, MIN(stock) AS stock_minimo FROM PRODUCTOS;
+SELECT MAX(total) AS total_maximo, MIN(total) AS total_minimo FROM VENTA;
+SELECT MAX(cantidad) AS cantidad_maxima, MIN(cantidad) AS cantidad_minima FROM FACTURA;
+
+
+SELECT PRODUCTOS.nombre AS producto_nombre, CATEGORIA.nombre AS categoria_nombre
+FROM PRODUCTOS
+INNER JOIN CATEGORIA ON PRODUCTOS.id_categoria = CATEGORIA.id_categoria;
+SELECT VENTA.id_venta, VENTA.fecha, VENTA.total, CLIENTES.nombre AS cliente_nombre, CLIENTES.correo AS cliente_correo
+FROM VENTA
+INNER JOIN CLIENTES ON VENTA.id_cliente = CLIENTES.id_clientes;
+SELECT FACTURA.id_factura, FACTURA.cantidad, FACTURA.precio_unitario, PRODUCTOS.nombre AS producto_nombre
+FROM FACTURA
+INNER JOIN PRODUCTOS ON FACTURA.id_producto = PRODUCTOS.id_producto;
+
+
+SELECT PRODUCTOS.nombre AS producto, CATEGORIA.nombre AS categoria
+FROM PRODUCTOS
+JOIN CATEGORIA ON PRODUCTOS.id_categoria = CATEGORIA.id_categoria
+WHERE PRODUCTOS.precio > 20.00;
+SELECT VENTA.id_venta, CLIENTES.nombre AS cliente, VENTA.total
+FROM VENTA
+JOIN CLIENTES ON VENTA.id_cliente = CLIENTES.id_clientes
+WHERE VENTA.total > 100.00;
+
+SELECT p.nombre AS producto, p.precio
+FROM PRODUCTOS p
+WHERE p.precio > (
+    SELECT AVG(precio) FROM PRODUCTOS WHERE id_categoria = p.id_categoria
+);
+SELECT p.nombre AS producto, p.precio
+FROM PRODUCTOS p
+WHERE p.precio > (
+    SELECT AVG(precio) FROM PRODUCTOS WHERE id_categoria = p.id_categoria
+);
+
+
+SELECT id_categoria, AVG(precio) AS precio_promedio
+FROM PRODUCTOS
+GROUP BY id_categoria;
+
+SELECT nombre, fecha
+FROM PRODUCTOS
+WHERE YEAR(fecha) = 2023;
+
+SELECT nombre, 'Producto' AS tipo
+FROM PRODUCTOS
+UNION
+SELECT nombre, 'Cliente' AS tipo
+FROM CLIENTES;
+
+SELECT nombre, descripcion
+FROM PRODUCTOS
+WHERE nombre LIKE '%Vasija%';
+
+SELECT nombre
+FROM PRODUCTOS
+WHERE EXISTS (
+    SELECT 1 FROM FACTURA WHERE id_producto = PRODUCTOS.id_producto
+);
+
+SELECT nombre, precio
+FROM PRODUCTOS
+ORDER BY precio DESC
+LIMIT 10 OFFSET 10;
+
